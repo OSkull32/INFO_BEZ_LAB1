@@ -27,7 +27,9 @@ jobs:
 
     - name: Run Safety (SCA)
       run: |
-        safety check -r requirements.txt --full-report --output safety_report.txt || true
+        safety check -r requirements.txt --full-report > safety_report.txt || true
+        echo "=== Safety Report ==="
+        cat safety_report.txt || true
 
     - name: Upload security reports
       uses: actions/upload-artifact@v4
