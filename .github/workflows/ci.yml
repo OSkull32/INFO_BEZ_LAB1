@@ -1,9 +1,13 @@
-name: Security CI
+name: Security and Quality CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  security-check:
+  security-scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,28 +18,43 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'requirements.txt'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install bandit safety
+        pip install bandit safety flake8 black
 
     - name: Run Bandit (SAST)
       run: |
         bandit -r app/ -f html -o bandit_report.html || true
 
-    - name: Run Safety (SCA)
+    - name: Run Safety scan (modern SCA)
       run: |
-        safety scan -r requirements.txt --output text > safety_report.txt || true
-        echo "=== Safety Report ==="
+        safety scan -r requirements.txt --output screen > safety_report.txt 2>&1 || true
+        echo "=== Safety Scan Report ==="
         cat safety_report.txt || true
 
-    - name: Upload security reports
+    - name: Check code formatting with Black
+      run: |
+        black --check app/ config.py run.py || true
+
+    - name: Lint with flake8
+      run: |
+        flake8 app/ config.py run.py --max-line-length=88 --ignore=E203,W503 --statistics || true
+
+    - name: Upload Bandit report
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-reports
-        path: |
-          bandit_report.html
-          safety_report.txt
+        path: bandit_report.html
+
+    - name: Upload Safety report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: safety-reports
+        path: safety_report.txt
