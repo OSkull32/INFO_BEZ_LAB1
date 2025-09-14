@@ -29,7 +29,7 @@ jobs:
 
     - name: Run Bandit (SAST)
       run: |
-        bandit -r app/ -f html -o bandit_report.html || true
+        bandit -r  app/ config.py run.py -f html -o bandit_report.html || true
 
     - name: Run Safety check (используем старую работающую версию)
       run: |
