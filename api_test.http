@@ -1,0 +1,71 @@
+### 1. Логин для получения токена
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "test"
+}
+
+> {%
+    client.test("Login should return 200 and token", function() {
+        client.assert(response.status === 200, "Expected status 200");
+        client.assert(response.body.hasOwnProperty("access_token"), "Response should contain access_token");
+        client.global.set("token", response.body.access_token);
+        client.log("Token saved: " + response.body.access_token);
+    });
+%}
+
+### 2. Доступ к защищенным данным с токеном
+GET http://127.0.0.1:5000/api/data
+Authorization: Bearer {{token}}
+Accept: application/json
+
+> {%
+    client.test("Protected data should return 200", function() {
+        client.assert(response.status === 200, "Expected status 200");
+        client.assert(response.body.hasOwnProperty("username"), "Response should contain username");
+    });
+%}
+
+### 3. Создание нового поста
+POST http://127.0.0.1:5000/api/posts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Мой первый пост",
+  "content": "Этот пост создан через PyCharm HTTP клиент!"
+}
+
+> {%
+    client.test("Create post should return 201", function() {
+        client.assert(response.status === 201, "Expected status 201");
+        client.assert(response.body.msg === "Пост создан", "Should return success message");
+    });
+%}
+
+### 4. Попытка доступа без токена (должен вернуть 401)
+GET http://127.0.0.1:5000/api/data
+Accept: application/json
+
+> {%
+    client.test("Unauthorized access should return 401", function() {
+        client.assert(response.status === 401, "Expected status 401");
+    });
+%}
+
+### 5. Неверные учетные данные (должен вернуть 401)
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+  "username": "wrong",
+  "password": "wrong"
+}
+
+> {%
+    client.test("Wrong credentials should return 401", function() {
+        client.assert(response.status === 401, "Expected status 401");
+    });
+%}

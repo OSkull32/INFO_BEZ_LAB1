@@ -1,0 +1,25 @@
+# Virtual environment
+venv/
+venv*/
+
+# PyCharm IDE
+.idea/
+*.iml
+*.ipr
+.iws
+
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.env
+
+# Database
+instance/
+*.db
+*.sqlite
+*.sqlite3
