@@ -31,11 +31,16 @@ jobs:
       run: |
         bandit -r app/ -f html -o bandit_report.html || true
 
-    - name: Run Safety scan (modern SCA)
+    - name: Run Safety check (используем старую работающую версию)
       run: |
-        safety scan -r requirements.txt --output screen > safety_report.txt 2>&1 || true
-        echo "=== Safety Scan Report ==="
+        safety check -r requirements.txt --full-report > safety_report.txt || true
+        echo "=== Safety Check Report ==="
         cat safety_report.txt || true
+
+    - name: Format code with Black
+      run: |
+        black app/ config.py run.py
+        echo "✅ Code formatted with Black"
 
     - name: Check code formatting with Black
       run: |
