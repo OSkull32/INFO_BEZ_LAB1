@@ -27,7 +27,7 @@ jobs:
 
     - name: Run Safety (SCA)
       run: |
-        safety check -r requirements.txt --full-report > safety_report.txt || true
+        safety scan -r requirements.txt --output text > safety_report.txt || true
         echo "=== Safety Report ==="
         cat safety_report.txt || true
 
