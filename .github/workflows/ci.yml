@@ -29,18 +29,11 @@ jobs:
 
     - name: Run Bandit (SAST)
       run: |
-        bandit -r  app/ config.py run.py -f html -o bandit_report.html || true
+        bandit -r  app/ config.py run.py || true
 
-    - name: Run Safety check (используем старую работающую версию)
+    - name: Run Safety check
       run: |
-        safety check -r requirements.txt --full-report > safety_report.txt || true
-        echo "=== Safety Check Report ==="
-        cat safety_report.txt || true
-
-    - name: Format code with Black
-      run: |
-        black app/ config.py run.py
-        echo "✅ Code formatted with Black"
+        safety check || true
 
     - name: Check code formatting with Black
       run: |
@@ -49,17 +42,3 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 app/ config.py run.py --max-line-length=88 --ignore=E203,W503 --statistics || true
-
-    - name: Upload Bandit report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: security-reports
-        path: bandit_report.html
-
-    - name: Upload Safety report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: safety-reports
-        path: safety_report.txt
