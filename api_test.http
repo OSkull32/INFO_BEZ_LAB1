@@ -19,7 +19,7 @@ Content-Type: application/json
 ### 2. Доступ к защищенным данным с токеном
 GET http://127.0.0.1:5000/api/data
 Authorization: Bearer {{token}}
-Accept: application/json
+Content-Type: application/json
 
 > {%
     client.test("Protected data should return 200", function() {

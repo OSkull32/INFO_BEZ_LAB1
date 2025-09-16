@@ -1,3 +1,4 @@
+markupsafe
 bcrypt==4.3.0
 Flask==3.1.2
 Flask-JWT-Extended==4.7.1
