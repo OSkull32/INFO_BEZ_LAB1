@@ -42,3 +42,10 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 app/ config.py run.py --max-line-length=88 --ignore=E203,W503 --statistics || true
+
+    - name: Run Snyk test для зависимостей Python
+      uses: snyk/actions/python@0.4.0
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --file=requirements.txt --report
